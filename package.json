@@ -1,0 +1,21 @@
+{
+  "name": "shogi-app",
+  "version": "1.0.0",
+  "description": "Browser-based Shogi application with Firebase, Docker, and Notion integration",
+  "scripts": {
+    "test": "jest",
+    "format": "prettier --write .",
+    "lint": "eslint . --ext .js,.ts,.tsx",
+    "dev": "docker-compose up -d",
+    "build": "docker-compose build",
+    "down": "docker-compose down"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "prettier": "^3.0.0",
+    "eslint": "^8.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}
