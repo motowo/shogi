@@ -103,10 +103,22 @@ shogi/
   - Firebase Admin SDK統合
   - エラーハンドリング
   - TypeScript実装
+- WebSocket Server（Socket.io）
+  - リアルタイム対戦機能
+  - ゲームルーム管理
+  - プレイヤー接続管理
+  - チャット機能
+  - Redis統合
+  - 認証ミドルウェア
+- Notion Recorder Service（1ページ1棋譜）
+  - Notion API統合
+  - 棋譜自動記録
+  - 戦法分析
+  - 重要局面検出
+  - Bull Queue による非同期処理
+  - Redis キャッシュ
 
 ### 🚧 実装中
-- WebSocket Server
-- Notion Recorder Service
 - Firebase統合
 
 ### 📋 実装予定
