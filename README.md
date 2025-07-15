@@ -96,9 +96,15 @@ shogi/
   - TypeScript設定
   - Docker対応
   - Nginx設定（プロキシ対応）
+- API Server基盤（Node.js + Express）
+  - RESTful API設計
+  - 認証ミドルウェア
+  - ゲーム管理サービス
+  - Firebase Admin SDK統合
+  - エラーハンドリング
+  - TypeScript実装
 
 ### 🚧 実装中
-- API Server基盤
 - WebSocket Server
 - Notion Recorder Service
 - Firebase統合
