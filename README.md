@@ -74,6 +74,10 @@ npm run down
 ```
 shogi/
 ├── frontend/          # React アプリケーション
+│   ├── src/          # TypeScript ソースコード
+│   ├── public/       # 静的ファイル
+│   ├── Dockerfile    # Docker 設定
+│   └── package.json  # 依存関係
 ├── api/              # API サーバー
 ├── websocket/        # WebSocket サーバー
 ├── notion-recorder/  # Notion 棋譜記録サービス
@@ -81,6 +85,27 @@ shogi/
 ├── docker-compose.yml
 └── README.md
 ```
+
+## 実装状況
+
+### ✅ 完了済み
+- プロジェクト構造設定
+- Docker Compose設定
+- フロントエンド基盤（React + TypeScript）
+  - 基本的なReactアプリケーション
+  - TypeScript設定
+  - Docker対応
+  - Nginx設定（プロキシ対応）
+
+### 🚧 実装中
+- API Server基盤
+- WebSocket Server
+- Notion Recorder Service
+- Firebase統合
+
+### 📋 実装予定
+- 将棋エンジン統合
+- 統合テスト
 
 ## Notion棋譜記録
 
