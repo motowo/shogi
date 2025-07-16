@@ -21,6 +21,21 @@ app.use(cors());
 app.use(morgan('combined'));
 app.use(express.json());
 
+// Simple auth middleware for name-based authentication
+app.use((req, res, next) => {
+  const userId = req.headers['x-user-id'];
+  const userName = req.headers['x-user-name'];
+  
+  if (userId && userName) {
+    req.user = {
+      id: userId as string,
+      name: userName as string,
+    };
+  }
+  
+  next();
+});
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({

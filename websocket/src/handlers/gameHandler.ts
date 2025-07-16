@@ -274,7 +274,7 @@ export class GameHandler {
       // Broadcast message to all participants
       this.io.to(gameId).emit('message_received', {
         userId: socket.userId,
-        userEmail: socket.userEmail,
+        userName: socket.userName,
         message,
         timestamp: new Date().toISOString(),
       });

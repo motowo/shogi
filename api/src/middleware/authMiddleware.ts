@@ -5,8 +5,8 @@ const authService = new AuthService();
 
 export interface AuthenticatedRequest extends Request {
   user?: {
-    uid: string;
-    email?: string;
+    id: string;
+    name: string;
   };
 }
 
@@ -16,22 +16,26 @@ export const authMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    const authHeader = req.headers.authorization;
+    const userId = req.headers['x-user-id'] as string;
+    const userName = req.headers['x-user-name'] as string;
 
-    if (!authHeader?.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Authorization token required' });
+    if (!userId || !userName) {
+      return res.status(401).json({ error: 'User ID and name are required' });
     }
 
-    const token = authHeader.substring(7);
-    const decodedToken = await authService.verifyIdToken(token);
+    // Validate user with auth service
+    const user = await authService.getUserProfile(userId);
+    if (!user) {
+      return res.status(401).json({ error: 'User not found' });
+    }
 
     req.user = {
-      uid: decodedToken.uid,
-      email: decodedToken.email,
+      id: userId,
+      name: userName,
     };
 
     next();
   } catch (error) {
-    res.status(401).json({ error: 'Invalid or expired token' });
+    res.status(401).json({ error: 'Authentication failed' });
   }
 };

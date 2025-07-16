@@ -1,66 +1,44 @@
 import React, { useState } from 'react';
 import './Auth.css';
 
-const Login = ({ onLogin, onSwitchToRegister, loading = false, error }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const Login = ({ onLogin, loading = false, error }) => {
+  const [name, setName] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await onLogin(email, password);
+    await onLogin(name);
   };
 
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h2>ログイン</h2>
+        <h2>プレイヤー名を入力</h2>
 
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label htmlFor="email">メールアドレス</label>
+            <label htmlFor="name">プレイヤー名</label>
             <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               required
               disabled={loading}
-              placeholder="example@email.com"
+              placeholder="プレイヤー名を入力してください"
+              maxLength={20}
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">パスワード</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={loading}
-              placeholder="パスワードを入力してください"
-            />
-          </div>
-
-          <button type="submit" className="auth-button" disabled={loading || !email || !password}>
-            {loading ? 'ログイン中...' : 'ログイン'}
+          <button type="submit" className="auth-button" disabled={loading || !name.trim()}>
+            {loading ? '参加中...' : '将棋を始める'}
           </button>
         </form>
 
-        <div className="auth-switch">
-          <p>
-            アカウントをお持ちでない方は{' '}
-            <button
-              type="button"
-              className="switch-button"
-              onClick={onSwitchToRegister}
-              disabled={loading}
-            >
-              新規登録
-            </button>
-          </p>
+        <div className="auth-info">
+          <p>※ テスト用の簡易認証です</p>
+          <p>※ 将来的にはOAuth認証を実装予定</p>
         </div>
       </div>
     </div>

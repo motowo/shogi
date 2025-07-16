@@ -1,15 +1,15 @@
 class ApiService {
   constructor() {
     this.baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-    this.token = null;
+    this.user = null;
   }
 
-  setAuthToken(token) {
-    this.token = token;
+  setUser(user) {
+    this.user = user;
   }
 
-  clearAuthToken() {
-    this.token = null;
+  clearUser() {
+    this.user = null;
   }
 
   async request(endpoint, options = {}) {
@@ -20,8 +20,9 @@ class ApiService {
       ...options.headers,
     };
 
-    if (this.token) {
-      headers.Authorization = `Bearer ${this.token}`;
+    if (this.user) {
+      headers['X-User-ID'] = this.user.id;
+      headers['X-User-Name'] = this.user.name;
     }
 
     try {
@@ -42,24 +43,11 @@ class ApiService {
     }
   }
 
-  // Auth endpoints
-  async login(email, password) {
-    return this.request('/api/auth/login', {
+  // Auth endpoints (simplified for name-based auth)
+  async validateUser(name) {
+    return this.request('/api/auth/validate', {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
-    });
-  }
-
-  async register(email, password, displayName) {
-    return this.request('/api/auth/register', {
-      method: 'POST',
-      body: JSON.stringify({ email, password, displayName }),
-    });
-  }
-
-  async refreshToken() {
-    return this.request('/api/auth/refresh', {
-      method: 'POST',
+      body: JSON.stringify({ name }),
     });
   }
 

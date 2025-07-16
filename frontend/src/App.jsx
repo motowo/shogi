@@ -2,39 +2,27 @@ import React, { useState } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { useWebSocket } from './hooks/useWebSocket';
 import Login from './components/Auth/Login';
-import Register from './components/Auth/Register';
 import GameMenu from './components/Menu/GameMenu';
 import GameRoom from './components/Game/GameRoom';
 import { apiService } from './services/api';
 import './App.css';
 
 const App = () => {
-  const { user, token, isAuthenticated, loading, login, register, logout } = useAuth();
-  const { isConnected } = useWebSocket(token);
+  const { user, isAuthenticated, loading, login, logout } = useAuth();
+  const { isConnected } = useWebSocket(user?.id, user?.name);
 
   const [appState, setAppState] = useState('login');
   const [currentGameId, setCurrentGameId] = useState(null);
   const [authError, setAuthError] = useState(null);
 
-  const handleLogin = async (email, password) => {
+  const handleLogin = async (name) => {
     setAuthError(null);
-    const result = await login(email, password);
+    const result = await login(name);
 
     if (result.success) {
       setAppState('menu');
     } else {
       setAuthError(result.error || 'ログインに失敗しました');
-    }
-  };
-
-  const handleRegister = async (email, password, displayName) => {
-    setAuthError(null);
-    const result = await register(email, password, displayName);
-
-    if (result.success) {
-      setAppState('menu');
-    } else {
-      setAuthError(result.error || '登録に失敗しました');
     }
   };
 
@@ -109,21 +97,11 @@ const App = () => {
   if (!isAuthenticated) {
     return (
       <div className="App">
-        {appState === 'login' ? (
-          <Login
-            onLogin={handleLogin}
-            onSwitchToRegister={() => setAppState('register')}
-            loading={loading}
-            error={authError}
-          />
-        ) : (
-          <Register
-            onRegister={handleRegister}
-            onSwitchToLogin={() => setAppState('login')}
-            loading={loading}
-            error={authError}
-          />
-        )}
+        <Login
+          onLogin={handleLogin}
+          loading={loading}
+          error={authError}
+        />
       </div>
     );
   }
@@ -145,11 +123,11 @@ const App = () => {
           onViewLeaderboard={handleViewLeaderboard}
           onLogout={handleLogout}
           user={{
-            displayName: user.displayName,
-            rating: user.rating,
-            gamesPlayed: user.gamesPlayed,
-            wins: user.wins,
-            losses: user.losses,
+            displayName: user.name,
+            rating: user.rating || 1000,
+            gamesPlayed: user.gamesPlayed || 0,
+            wins: user.wins || 0,
+            losses: user.losses || 0,
           }}
         />
       )}
@@ -157,7 +135,7 @@ const App = () => {
       {appState === 'game' && currentGameId && user && (
         <GameRoom
           gameId={currentGameId}
-          userId={user.uid}
+          userId={user.id}
           onMove={handleMove}
           onLeaveGame={handleLeaveGame}
         />

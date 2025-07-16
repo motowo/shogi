@@ -4,47 +4,39 @@ import { AuthService } from '../services/authService';
 const router = Router();
 const authService = new AuthService();
 
-// POST /api/auth/verify - Verify Firebase token
-router.post('/verify', async (req, res) => {
+// POST /api/auth/validate - Validate name-based authentication
+router.post('/validate', async (req, res) => {
   try {
-    const { idToken } = req.body;
+    const { name } = req.body;
 
-    if (!idToken) {
-      return res.status(400).json({ error: 'ID token is required' });
+    if (!name) {
+      return res.status(400).json({ error: 'Name is required' });
     }
 
-    const decodedToken = await authService.verifyIdToken(idToken);
+    const trimmedName = name.trim();
+    if (trimmedName.length === 0) {
+      return res.status(400).json({ error: 'Name cannot be empty' });
+    }
+
+    if (trimmedName.length > 20) {
+      return res.status(400).json({ error: 'Name must be 20 characters or less' });
+    }
+
+    const user = await authService.validateUser(trimmedName);
     res.json({
-      uid: decodedToken.uid,
-      email: decodedToken.email,
-      verified: true,
+      success: true,
+      user,
     });
   } catch (error) {
-    res.status(401).json({ error: 'Invalid token' });
+    res.status(500).json({ error: 'Authentication failed' });
   }
 });
 
-// POST /api/auth/refresh - Refresh user session
-router.post('/refresh', async (req, res) => {
+// GET /api/auth/user/:id - Get user profile by ID
+router.get('/user/:id', async (req, res) => {
   try {
-    const { refreshToken } = req.body;
-
-    if (!refreshToken) {
-      return res.status(400).json({ error: 'Refresh token is required' });
-    }
-
-    const result = { token: 'refresh_not_implemented' };
-    res.json(result);
-  } catch (error) {
-    res.status(401).json({ error: 'Invalid refresh token' });
-  }
-});
-
-// GET /api/auth/user/:uid - Get user profile
-router.get('/user/:uid', async (req, res) => {
-  try {
-    const { uid } = req.params;
-    const userProfile = await authService.getUserProfile(uid);
+    const { id } = req.params;
+    const userProfile = await authService.getUserProfile(id);
 
     if (!userProfile) {
       return res.status(404).json({ error: 'User not found' });

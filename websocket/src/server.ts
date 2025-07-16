@@ -7,6 +7,7 @@ import { GameHandler } from './handlers/gameHandler';
 import { AuthService } from './services/authService';
 import { RedisService } from './services/redisService';
 
+
 dotenv.config();
 
 const httpServer = createServer();
@@ -28,17 +29,18 @@ const gameHandler = new GameHandler(io, redisService);
 // Middleware for authentication
 io.use(async (socket, next) => {
   try {
-    const token = socket.handshake.auth.token;
+    const userId = socket.handshake.auth.userId;
+    const userName = socket.handshake.auth.userName;
 
-    if (!token) {
-      return next(new Error('Authentication token required'));
+    if (!userId || !userName) {
+      return next(new Error('User ID and name are required'));
     }
 
-    const decodedToken = await authService.verifyIdToken(token);
-    socket.userId = decodedToken.uid;
-    socket.userEmail = decodedToken.email;
+    const user = await authService.authenticateUser(userId, userName);
+    socket.userId = user.id;
+    socket.userName = user.name;
 
-    console.log(`🔐 User authenticated: ${decodedToken.uid}`);
+    console.log(`🔐 User authenticated: ${user.id} (${user.name})`);
     next();
   } catch (error) {
     console.error('Authentication error:', error);
@@ -57,6 +59,11 @@ io.on('connection', (socket) => {
   socket.on('disconnect', (reason) => {
     console.log(`🔌 User disconnected: ${socket.userId}, reason: ${reason}`);
     gameHandler.handleDisconnection(socket);
+    
+    // Remove user from auth service
+    if (socket.userId) {
+      authService.removeUser(socket.userId);
+    }
   });
 
   // Health check
