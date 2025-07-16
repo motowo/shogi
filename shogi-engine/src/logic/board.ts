@@ -76,6 +76,18 @@ export class Board {
   }
 
   private parsePosition(position: string): Position | null {
+    // Handle "row,col" format
+    if (position.includes(',')) {
+      const parts = position.split(',');
+      const row = parseInt(parts[0]);
+      const col = parseInt(parts[1]);
+
+      if (row >= 0 && row < this.BOARD_SIZE && col >= 0 && col < this.BOARD_SIZE) {
+        return { row, col };
+      }
+      return null;
+    }
+
     // Position format: "7f" (column 7, row f)
     // Convert to array indices (0-8)
     if (position.length !== 2) return null;

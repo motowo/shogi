@@ -25,7 +25,7 @@ export class AuthService {
       { id: 'test2', name: 'テストユーザー2', rating: 1600 },
     ];
 
-    testUsers.forEach(user => {
+    testUsers.forEach((user) => {
       this.users.set(user.id, {
         ...user,
         gamesPlayed: 0,
@@ -42,7 +42,7 @@ export class AuthService {
     // In production, this would check against a database
     // For now, we'll create a simple user object
     const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     const user: UserProfile = {
       id: userId,
       name,

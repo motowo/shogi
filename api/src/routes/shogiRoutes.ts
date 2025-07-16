@@ -18,7 +18,7 @@ router.get('/initial-board', async (req, res) => {
 router.post('/validate-move', async (req, res) => {
   try {
     const { boardState, move, currentPlayer } = req.body;
-    
+
     if (!boardState || !move || !currentPlayer) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
@@ -26,9 +26,9 @@ router.post('/validate-move', async (req, res) => {
     const response = await axios.post(`${SHOGI_ENGINE_URL}/validate-move`, {
       boardState,
       move,
-      currentPlayer
+      currentPlayer,
     });
-    
+
     res.json(response.data);
   } catch (error) {
     res.status(500).json({ error: 'Failed to validate move' });
@@ -39,7 +39,7 @@ router.post('/validate-move', async (req, res) => {
 router.post('/make-move', async (req, res) => {
   try {
     const { boardState, move, currentPlayer } = req.body;
-    
+
     if (!boardState || !move || !currentPlayer) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
@@ -47,9 +47,9 @@ router.post('/make-move', async (req, res) => {
     const response = await axios.post(`${SHOGI_ENGINE_URL}/make-move`, {
       boardState,
       move,
-      currentPlayer
+      currentPlayer,
     });
-    
+
     res.json(response.data);
   } catch (error) {
     res.status(500).json({ error: 'Failed to make move' });
@@ -60,15 +60,15 @@ router.post('/make-move', async (req, res) => {
 router.get('/valid-moves', async (req, res) => {
   try {
     const { boardState, position, currentPlayer } = req.query;
-    
+
     if (!boardState || !position || !currentPlayer) {
       return res.status(400).json({ error: 'Missing required parameters' });
     }
 
     const response = await axios.get(`${SHOGI_ENGINE_URL}/valid-moves`, {
-      params: { boardState, position, currentPlayer }
+      params: { boardState, position, currentPlayer },
     });
-    
+
     res.json(response.data);
   } catch (error) {
     res.status(500).json({ error: 'Failed to get valid moves' });
@@ -79,16 +79,16 @@ router.get('/valid-moves', async (req, res) => {
 router.post('/check-game-state', async (req, res) => {
   try {
     const { boardState, currentPlayer } = req.body;
-    
+
     if (!boardState || !currentPlayer) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     const response = await axios.post(`${SHOGI_ENGINE_URL}/check-game-state`, {
       boardState,
-      currentPlayer
+      currentPlayer,
     });
-    
+
     res.json(response.data);
   } catch (error) {
     res.status(500).json({ error: 'Failed to check game state' });
@@ -99,7 +99,7 @@ router.post('/check-game-state', async (req, res) => {
 router.post('/ai-move', async (req, res) => {
   try {
     const { boardState, currentPlayer, difficulty } = req.body;
-    
+
     if (!boardState || !currentPlayer || !difficulty) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
@@ -107,9 +107,9 @@ router.post('/ai-move', async (req, res) => {
     const response = await axios.post(`${SHOGI_ENGINE_URL}/ai-move`, {
       boardState,
       currentPlayer,
-      difficulty
+      difficulty,
     });
-    
+
     res.json(response.data);
   } catch (error) {
     res.status(500).json({ error: 'Failed to get AI move' });
@@ -120,7 +120,7 @@ router.post('/ai-move', async (req, res) => {
 router.post('/convert-notation', async (req, res) => {
   try {
     const { move, fromFormat, toFormat } = req.body;
-    
+
     if (!move || !fromFormat || !toFormat) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
@@ -128,9 +128,9 @@ router.post('/convert-notation', async (req, res) => {
     const response = await axios.post(`${SHOGI_ENGINE_URL}/convert-notation`, {
       move,
       fromFormat,
-      toFormat
+      toFormat,
     });
-    
+
     res.json(response.data);
   } catch (error) {
     res.status(500).json({ error: 'Failed to convert notation' });

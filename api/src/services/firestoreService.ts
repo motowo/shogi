@@ -7,7 +7,7 @@ export interface Game {
     gote: string;
   };
   moves: any[];
-  status: 'active' | 'finished' | 'abandoned';
+  status: 'waiting' | 'active' | 'finished' | 'abandoned';
   result?: {
     winner: string;
     reason: string;

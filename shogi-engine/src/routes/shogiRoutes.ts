@@ -19,7 +19,7 @@ router.get('/initial-board', (req, res) => {
 router.post('/validate-move', (req, res) => {
   try {
     const { boardState, move, currentPlayer } = req.body;
-    
+
     if (!boardState || !move || !currentPlayer) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
@@ -35,13 +35,13 @@ router.post('/validate-move', (req, res) => {
 router.post('/make-move', (req, res) => {
   try {
     const { boardState, move, currentPlayer } = req.body;
-    
+
     if (!boardState || !move || !currentPlayer) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     const result = shogiEngine.makeMove(boardState, move, currentPlayer);
-    
+
     if (result) {
       res.json(result);
     } else {
@@ -56,15 +56,16 @@ router.post('/make-move', (req, res) => {
 router.get('/valid-moves', (req, res) => {
   try {
     const { boardState, position, currentPlayer } = req.query;
-    
+
     if (!boardState || !position || !currentPlayer) {
       return res.status(400).json({ error: 'Missing required parameters' });
     }
 
     const boardArray = JSON.parse(boardState as string);
-    const moves = shogiEngine.getValidMoves(boardArray, position as string, currentPlayer as any);
-    
-    res.json({ moves });
+    const positionObj = JSON.parse(position as string);
+    const validMoves = shogiEngine.getValidMoves(boardArray, positionObj, currentPlayer as any);
+
+    res.json({ validMoves });
   } catch (error) {
     res.status(500).json({ error: 'Failed to get valid moves' });
   }
@@ -74,7 +75,7 @@ router.get('/valid-moves', (req, res) => {
 router.post('/check-game-state', (req, res) => {
   try {
     const { boardState, currentPlayer } = req.body;
-    
+
     if (!boardState || !currentPlayer) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
@@ -90,13 +91,13 @@ router.post('/check-game-state', (req, res) => {
 router.post('/ai-move', async (req, res) => {
   try {
     const { boardState, currentPlayer, difficulty } = req.body;
-    
+
     if (!boardState || !currentPlayer || !difficulty) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     const aiMove = await shogiEngine.getAIMove(boardState, currentPlayer, difficulty as Difficulty);
-    
+
     if (aiMove) {
       res.json({ move: aiMove });
     } else {
@@ -111,7 +112,7 @@ router.post('/ai-move', async (req, res) => {
 router.post('/convert-notation', (req, res) => {
   try {
     const { move, fromFormat, toFormat } = req.body;
-    
+
     if (!move || !fromFormat || !toFormat) {
       return res.status(400).json({ error: 'Missing required fields' });
     }

@@ -68,10 +68,10 @@ class ApiService {
   }
 
   // Game endpoints
-  async createGame(opponentId) {
+  async createGame(gameType, difficulty = 'medium') {
     return this.request('/api/games', {
       method: 'POST',
-      body: JSON.stringify({ opponentId }),
+      body: JSON.stringify({ gameType, difficulty }),
     });
   }
 
@@ -87,6 +87,41 @@ class ApiService {
     return this.request(`/api/games/${gameId}/moves`, {
       method: 'POST',
       body: JSON.stringify({ move }),
+    });
+  }
+
+  // Shogi engine endpoints
+  async getInitialBoard() {
+    return this.request('/api/shogi/initial-board');
+  }
+
+  async validateMove(boardState, move, currentPlayer) {
+    return this.request('/api/shogi/validate-move', {
+      method: 'POST',
+      body: JSON.stringify({ boardState, move, currentPlayer }),
+    });
+  }
+
+  async getValidMoves(boardState, position, currentPlayer) {
+    const params = new URLSearchParams({
+      boardState: JSON.stringify(boardState),
+      position: JSON.stringify(position),
+      currentPlayer,
+    });
+    return this.request(`/api/shogi/valid-moves?${params}`);
+  }
+
+  async applyShogiMove(boardState, move, currentPlayer) {
+    return this.request('/api/shogi/make-move', {
+      method: 'POST',
+      body: JSON.stringify({ boardState, move, currentPlayer }),
+    });
+  }
+
+  async checkGameState(boardState, currentPlayer) {
+    return this.request('/api/shogi/check-game-state', {
+      method: 'POST',
+      body: JSON.stringify({ boardState, currentPlayer }),
     });
   }
 
