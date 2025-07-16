@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { websocketService } from '../services/websocket';
 
-export const useWebSocket = (token) => {
+export const useWebSocket = (userId, userName) => {
   const [isConnected, setIsConnected] = useState(false);
   const [gameState, setGameState] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (token) {
-      websocketService.connect(token);
+    if (userId && userName) {
+      websocketService.connect(userId, userName);
     } else {
       websocketService.disconnect();
     }
@@ -47,7 +47,7 @@ export const useWebSocket = (token) => {
       websocketService.off('game_updated', handleGameUpdated);
       websocketService.off('error', handleError);
     };
-  }, [token]);
+  }, [userId, userName]);
 
   const joinGame = useCallback((gameId) => {
     websocketService.joinGame(gameId);

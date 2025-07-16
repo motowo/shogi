@@ -1,35 +1,51 @@
-import admin from 'firebase-admin';
+export interface SimpleUser {
+  id: string;
+  name: string;
+}
 
 export class AuthService {
+  private connectedUsers: Map<string, SimpleUser> = new Map();
+
   constructor() {
-    this.initializeFirebase();
+    console.log('AuthService initialized with simple name-based authentication');
   }
 
-  private initializeFirebase() {
-    if (!admin.apps.length) {
-      try {
-        const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
-
-        if (serviceAccount) {
-          const serviceAccountObj = JSON.parse(serviceAccount);
-          admin.initializeApp({
-            credential: admin.credential.cert(serviceAccountObj),
-          });
-        } else {
-          // For development, use default credentials
-          admin.initializeApp();
-        }
-      } catch (error: any) {
-        console.warn('Firebase initialization skipped:', error.message);
-      }
+  async authenticateUser(userId: string, userName: string): Promise<SimpleUser> {
+    // Simple validation
+    if (!userId || !userName) {
+      throw new Error('User ID and name are required');
     }
+
+    if (userName.trim().length === 0) {
+      throw new Error('User name cannot be empty');
+    }
+
+    if (userName.trim().length > 20) {
+      throw new Error('User name must be 20 characters or less');
+    }
+
+    const user: SimpleUser = {
+      id: userId,
+      name: userName.trim(),
+    };
+
+    this.connectedUsers.set(userId, user);
+    return user;
   }
 
-  async verifyIdToken(idToken: string): Promise<admin.auth.DecodedIdToken> {
-    try {
-      return await admin.auth().verifyIdToken(idToken);
-    } catch (error) {
-      throw new Error('Invalid ID token');
-    }
+  getUserById(userId: string): SimpleUser | undefined {
+    return this.connectedUsers.get(userId);
+  }
+
+  removeUser(userId: string): void {
+    this.connectedUsers.delete(userId);
+  }
+
+  getConnectedUsers(): SimpleUser[] {
+    return Array.from(this.connectedUsers.values());
+  }
+
+  getUserCount(): number {
+    return this.connectedUsers.size;
   }
 }

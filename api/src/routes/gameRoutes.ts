@@ -10,7 +10,7 @@ router.use(authMiddleware);
 // GET /api/games - Get user's games
 router.get('/', async (req, res) => {
   try {
-    const userId = req.user?.uid;
+    const userId = req.user?.id;
     const games = await gameService.getPlayerGames(userId);
     res.json(games);
   } catch (error) {
@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
 // POST /api/games - Create new game
 router.post('/', async (req, res) => {
   try {
-    const userId = req.user?.uid;
+    const userId = req.user?.id;
     const { opponentId } = req.body;
 
     const game = await gameService.createGame(userId, opponentId);
@@ -53,7 +53,7 @@ router.post('/:gameId/moves', async (req, res) => {
   try {
     const { gameId } = req.params;
     const { move } = req.body;
-    const userId = req.user?.uid;
+    const userId = req.user?.id;
 
     const success = await gameService.makeMove(gameId, userId, move);
     res.json({ success });

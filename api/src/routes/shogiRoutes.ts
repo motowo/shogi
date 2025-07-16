@@ -1,11 +1,8 @@
 import { Router } from 'express';
-import { authMiddleware } from '../middleware/authMiddleware';
 import axios from 'axios';
 
 const router = Router();
 const SHOGI_ENGINE_URL = process.env.SHOGI_ENGINE_URL || 'http://shogi-engine:8002';
-
-router.use(authMiddleware);
 
 // GET /api/shogi/initial-board - Get initial board state
 router.get('/initial-board', async (req, res) => {

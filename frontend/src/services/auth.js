@@ -5,7 +5,6 @@ class AuthService {
     this.listeners = [];
     this.authState = {
       user: null,
-      token: null,
       isAuthenticated: false,
       loading: true,
     };
@@ -13,18 +12,15 @@ class AuthService {
   }
 
   async initializeAuth() {
-    const token = localStorage.getItem('shogi_token');
-    if (token) {
-      apiService.setAuthToken(token);
-      this.authState.token = token;
-
-      // Validate token by fetching user profile
-      const result = await apiService.getUserProfile();
-      if (result.data) {
-        this.authState.user = result.data;
+    const user = localStorage.getItem('shogi_user');
+    if (user) {
+      try {
+        const userData = JSON.parse(user);
+        this.authState.user = userData;
         this.authState.isAuthenticated = true;
-      } else {
-        // Token is invalid, clear it
+        apiService.setUser(userData);
+      } catch (error) {
+        console.error('Failed to parse user data:', error);
         this.clearAuth();
       }
     }
@@ -44,89 +40,63 @@ class AuthService {
     this.listeners.forEach((listener) => listener(this.authState));
   }
 
-  setAuth(token, user) {
+  setAuth(user) {
     this.authState = {
       user,
-      token,
       isAuthenticated: true,
       loading: false,
     };
 
-    localStorage.setItem('shogi_token', token);
-    apiService.setAuthToken(token);
+    localStorage.setItem('shogi_user', JSON.stringify(user));
+    apiService.setUser(user);
     this.notifyListeners();
   }
 
   clearAuth() {
     this.authState = {
       user: null,
-      token: null,
       isAuthenticated: false,
       loading: false,
     };
 
-    localStorage.removeItem('shogi_token');
-    apiService.clearAuthToken();
+    localStorage.removeItem('shogi_user');
+    apiService.clearUser();
     this.notifyListeners();
   }
 
-  async login(email, password) {
+  async login(name) {
     this.authState.loading = true;
     this.notifyListeners();
 
-    const result = await apiService.login(email, password);
-
-    if (result.data) {
-      this.setAuth(result.data.token, result.data.user);
-      return { success: true };
-    } else {
+    if (!name || !name.trim()) {
       this.authState.loading = false;
       this.notifyListeners();
-      return { success: false, error: result.error };
+      return { success: false, error: 'プレイヤー名を入力してください' };
     }
-  }
 
-  async register(email, password, displayName) {
-    this.authState.loading = true;
-    this.notifyListeners();
-
-    const result = await apiService.register(email, password, displayName);
-
-    if (result.data) {
-      this.setAuth(result.data.token, result.data.user);
-      return { success: true };
-    } else {
+    const trimmedName = name.trim();
+    if (trimmedName.length > 20) {
       this.authState.loading = false;
       this.notifyListeners();
-      return { success: false, error: result.error };
+      return { success: false, error: 'プレイヤー名は20文字以内で入力してください' };
     }
+
+    const user = {
+      id: Date.now().toString(),
+      name: trimmedName,
+      createdAt: new Date().toISOString(),
+    };
+
+    this.setAuth(user);
+    return { success: true };
   }
 
   async logout() {
     this.clearAuth();
   }
 
-  async refreshToken() {
-    const result = await apiService.refreshToken();
-
-    if (result.data) {
-      const newToken = result.data.token;
-      this.authState.token = newToken;
-      localStorage.setItem('shogi_token', newToken);
-      apiService.setAuthToken(newToken);
-      return true;
-    } else {
-      this.clearAuth();
-      return false;
-    }
-  }
-
   getCurrentUser() {
     return this.authState.user;
-  }
-
-  getToken() {
-    return this.authState.token;
   }
 
   isAuthenticated() {

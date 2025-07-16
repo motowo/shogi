@@ -62,8 +62,8 @@ export interface ChatMessage {
 // Socket.io の拡張型定義
 declare module 'socket.io' {
   interface Socket {
-    userId: string;
-    userEmail?: string;
+    userId?: string;
+    userName?: string;
   }
 }
 

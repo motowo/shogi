@@ -70,9 +70,9 @@ class WebSocketService {
     });
   }
 
-  connect(token) {
+  connect(userId, userName) {
     if (this.socket && !this.isConnected) {
-      this.socket.auth = { token };
+      this.socket.auth = { userId, userName };
       this.socket.connect();
     }
   }

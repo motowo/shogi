@@ -1,10 +1,6 @@
-import { auth } from '../config/firebase';
-import { FirestoreService, User } from './firestoreService';
-
 export interface UserProfile {
-  uid: string;
-  email?: string;
-  displayName?: string;
+  id: string;
+  name: string;
   rating: number;
   gamesPlayed: number;
   wins: number;
@@ -15,91 +11,88 @@ export interface UserProfile {
 }
 
 export class AuthService {
-  private firestoreService: FirestoreService;
+  private users: Map<string, UserProfile> = new Map();
 
   constructor() {
-    this.firestoreService = new FirestoreService();
+    // Initialize with some test data
+    this.initializeTestData();
   }
 
-  async verifyIdToken(idToken: string): Promise<any> {
-    try {
-      return await auth.verifyIdToken(idToken);
-    } catch (error) {
-      throw new Error('Invalid ID token');
-    }
-  }
+  private initializeTestData() {
+    // This would be replaced with actual database in production
+    const testUsers = [
+      { id: 'test1', name: 'テストユーザー1', rating: 1500 },
+      { id: 'test2', name: 'テストユーザー2', rating: 1600 },
+    ];
 
-  async createUser(userData: { email: string; password: string; displayName: string }) {
-    try {
-      const userRecord = await auth.createUser({
-        email: userData.email,
-        password: userData.password,
-        displayName: userData.displayName,
+    testUsers.forEach(user => {
+      this.users.set(user.id, {
+        ...user,
+        gamesPlayed: 0,
+        wins: 0,
+        losses: 0,
+        draws: 0,
+        createdAt: new Date(),
+        lastSeen: new Date(),
       });
-
-      // Create user profile in Firestore
-      await this.firestoreService.createUser({
-        uid: userRecord.uid,
-        email: userData.email,
-        displayName: userData.displayName,
-      });
-
-      return userRecord;
-    } catch (error) {
-      console.error('User creation failed:', error);
-      throw error;
-    }
+    });
   }
 
-  async getUserProfile(uid: string): Promise<UserProfile | null> {
+  async validateUser(name: string): Promise<UserProfile> {
+    // In production, this would check against a database
+    // For now, we'll create a simple user object
+    const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const user: UserProfile = {
+      id: userId,
+      name,
+      rating: 1500,
+      gamesPlayed: 0,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      createdAt: new Date(),
+      lastSeen: new Date(),
+    };
+
+    this.users.set(userId, user);
+    return user;
+  }
+
+  async getUserProfile(id: string): Promise<UserProfile | null> {
     try {
-      const user = await this.firestoreService.getUser(uid);
+      const user = this.users.get(id);
       if (!user) return null;
 
-      return {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        rating: user.rating || 1500,
-        gamesPlayed: user.gamesPlayed || 0,
-        wins: user.wins || 0,
-        losses: user.losses || 0,
-        draws: user.draws || 0,
-        createdAt: user.createdAt,
-        lastSeen: user.updatedAt,
-      };
+      // Update last seen
+      user.lastSeen = new Date();
+      return user;
     } catch (error) {
       console.error('Error fetching user profile:', error);
       return null;
     }
   }
 
-  async updateUserProfile(uid: string, updates: Partial<UserProfile>): Promise<UserProfile | null> {
+  async updateUserProfile(id: string, updates: Partial<UserProfile>): Promise<UserProfile | null> {
     try {
-      const userUpdates: Partial<User> = {
-        email: updates.email,
-        displayName: updates.displayName,
-        rating: updates.rating,
-        gamesPlayed: updates.gamesPlayed,
-        wins: updates.wins,
-        losses: updates.losses,
-        draws: updates.draws,
+      const user = this.users.get(id);
+      if (!user) return null;
+
+      const updatedUser = {
+        ...user,
+        ...updates,
+        lastSeen: new Date(),
       };
 
-      await this.firestoreService.updateUser(uid, userUpdates);
-      return this.getUserProfile(uid);
+      this.users.set(id, updatedUser);
+      return updatedUser;
     } catch (error) {
       console.error('Error updating user profile:', error);
       throw error;
     }
   }
 
-  async deleteUser(uid: string) {
-    try {
-      await auth.deleteUser(uid);
-    } catch (error) {
-      console.error('User deletion failed:', error);
-      throw error;
-    }
+  async getAllUsers(): Promise<UserProfile[]> {
+    return Array.from(this.users.values());
   }
 }

@@ -6,7 +6,7 @@ COPY package*.json ./
 RUN npm ci --legacy-peer-deps --include=dev
 
 COPY . .
-RUN npm run build
+RUN GENERATE_SOURCEMAP=false npx react-scripts build
 
 FROM nginx:alpine
 
