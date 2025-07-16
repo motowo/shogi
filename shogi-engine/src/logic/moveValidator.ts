@@ -248,6 +248,18 @@ export class MoveValidator {
   }
 
   private parsePosition(position: string): Position | null {
+    // Handle "row,col" format
+    if (position.includes(',')) {
+      const parts = position.split(',');
+      const row = parseInt(parts[0]);
+      const col = parseInt(parts[1]);
+
+      if (row >= 0 && row < 9 && col >= 0 && col < 9) {
+        return { row, col };
+      }
+      return null;
+    }
+
     if (position.length !== 2) return null;
 
     const col = parseInt(position[0]) - 1;
@@ -259,7 +271,7 @@ export class MoveValidator {
   }
 
   private formatPosition(row: number, col: number): string {
-    return `${col + 1}${String.fromCharCode('a'.charCodeAt(0) + row)}`;
+    return `${row},${col}`;
   }
 
   private isSamePlayer(piece1: string, piece2: string): boolean {

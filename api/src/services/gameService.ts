@@ -43,27 +43,45 @@ export class GameService extends EventEmitter {
     this.firestoreService = new FirestoreService();
   }
 
-  async createGame(senteId: string, goteId: string): Promise<GameState> {
+  async createGame(
+    playerId: string,
+    gameType: 'ai' | 'human',
+    difficulty?: string,
+    opponentId?: string
+  ): Promise<GameState> {
+    const gameId = `game_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    let senteId: string;
+    let goteId: string;
+
+    if (gameType === 'ai') {
+      senteId = playerId;
+      goteId = 'ai_' + (difficulty || 'medium');
+    } else {
+      senteId = playerId;
+      goteId = opponentId || 'waiting';
+    }
+
     const gameData: Omit<Game, 'id' | 'createdAt' | 'updatedAt'> = {
       players: { sente: senteId, gote: goteId },
       moves: [],
-      status: 'active',
+      status: gameType === 'ai' ? 'active' : 'waiting',
       startTime: new Date(),
     };
 
-    const gameId = await this.firestoreService.createGame(gameData);
+    const firestoreGameId = await this.firestoreService.createGame(gameData);
 
     const game: GameState = {
-      id: gameId,
+      id: firestoreGameId,
       players: { sente: senteId, gote: goteId },
       currentPlayer: 'sente',
       board: this.getInitialBoard(),
       moves: [],
-      status: 'active',
+      status: gameType === 'ai' ? 'active' : 'waiting',
       startTime: new Date(),
     };
 
-    this.games.set(gameId, game);
+    this.games.set(firestoreGameId, game);
     this.emit('game:created', game);
     return game;
   }
@@ -94,7 +112,7 @@ export class GameService extends EventEmitter {
     return null;
   }
 
-  async makeMove(gameId: string, playerId: string, move: Move): Promise<boolean> {
+  async makeMove(gameId: string, playerId: string, move: any): Promise<boolean> {
     const game = await this.getGame(gameId);
     if (!game) return false;
 
@@ -103,10 +121,20 @@ export class GameService extends EventEmitter {
       return false;
     }
 
+    // Convert move format
+    const formattedMove: Move = {
+      from: `${move.from.row}${move.from.col}`,
+      to: `${move.to.row}${move.to.col}`,
+      piece: move.piece || '',
+      captured: move.captured,
+      promoted: move.promoted,
+      timestamp: new Date(),
+    };
+
     // Basic move validation (simplified)
-    if (this.isValidMove(game, move)) {
-      game.moves.push(move);
-      this.updateBoard(game, move);
+    if (this.isValidMove(game, formattedMove)) {
+      game.moves.push(formattedMove);
+      this.updateBoardWithMove(game, move);
 
       // Switch turns
       game.currentPlayer = game.currentPlayer === 'sente' ? 'gote' : 'sente';
@@ -135,7 +163,7 @@ export class GameService extends EventEmitter {
         });
       }
 
-      this.emit('game:move', { gameId, move, game });
+      this.emit('game:move', { gameId, move: formattedMove, game });
       return true;
     }
 
@@ -193,6 +221,29 @@ export class GameService extends EventEmitter {
       const piece = game.board[fromPos.row][fromPos.col];
       game.board[fromPos.row][fromPos.col] = '';
       game.board[toPos.row][toPos.col] = piece;
+    }
+  }
+
+  private updateBoardWithMove(game: GameState, move: any): void {
+    // Handle move with row/col format
+    const fromRow = move.from.row;
+    const fromCol = move.from.col;
+    const toRow = move.to.row;
+    const toCol = move.to.col;
+
+    if (
+      fromRow >= 0 &&
+      fromRow < 9 &&
+      fromCol >= 0 &&
+      fromCol < 9 &&
+      toRow >= 0 &&
+      toRow < 9 &&
+      toCol >= 0 &&
+      toCol < 9
+    ) {
+      const piece = game.board[fromRow][fromCol];
+      game.board[fromRow][fromCol] = '';
+      game.board[toRow][toCol] = piece;
     }
   }
 

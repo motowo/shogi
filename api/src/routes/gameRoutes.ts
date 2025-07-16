@@ -22,9 +22,9 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const userId = req.user?.id;
-    const { opponentId } = req.body;
+    const { gameType, difficulty, opponentId } = req.body;
 
-    const game = await gameService.createGame(userId, opponentId);
+    const game = await gameService.createGame(userId, gameType, difficulty, opponentId);
 
     res.status(201).json(game);
   } catch (error) {

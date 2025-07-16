@@ -41,12 +41,12 @@ router.get('/leaderboard', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit as string) || 10;
     const users = await authService.getAllUsers();
-    
+
     // Sort by rating and limit results
     const leaderboard = users
       .sort((a, b) => b.rating - a.rating)
       .slice(0, limit)
-      .map(user => ({
+      .map((user) => ({
         id: user.id,
         name: user.name,
         rating: user.rating,

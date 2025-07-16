@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { apiService } from '../../services/api';
 import './ShogiBoard.css';
 
 const PIECE_SYMBOLS = {
@@ -60,7 +61,7 @@ const ShogiBoard = ({
   };
 
   const handleSquareClick = useCallback(
-    (row, col) => {
+    async (row, col) => {
       if (disabled) return;
 
       const piece = boardState[row][col];
@@ -83,8 +84,27 @@ const ShogiBoard = ({
       } else if (piece && isPieceOwnedByCurrentPlayer(piece)) {
         // Select piece and show possible moves
         setSelectedSquare(clickedPosition);
-        // In a real implementation, you would fetch possible moves from the game engine
-        setPossibleMoves([]); // Placeholder
+        
+        // 実際の合法手を取得
+        try {
+          const result = await apiService.getValidMoves(boardState, clickedPosition, currentPlayer);
+          if (result.data && result.data.validMoves) {
+            setPossibleMoves(result.data.validMoves);
+          } else {
+            // フォールバック: 基本的な移動パターン
+            const fallbackMoves = [
+              { row: Math.max(0, row - 1), col },
+              { row: Math.min(8, row + 1), col },
+              { row, col: Math.max(0, col - 1) },
+              { row, col: Math.min(8, col + 1) },
+            ].filter(pos => pos.row >= 0 && pos.row < 9 && pos.col >= 0 && pos.col < 9);
+            setPossibleMoves(fallbackMoves);
+          }
+        } catch (error) {
+          console.error('Failed to get valid moves:', error);
+          // エラー時は空の配列を設定
+          setPossibleMoves([]);
+        }
       }
     },
     [boardState, selectedSquare, currentPlayer, disabled, onMove, possibleMoves]

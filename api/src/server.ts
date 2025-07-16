@@ -25,14 +25,14 @@ app.use(express.json());
 app.use((req, res, next) => {
   const userId = req.headers['x-user-id'];
   const userName = req.headers['x-user-name'];
-  
+
   if (userId && userName) {
     req.user = {
       id: userId as string,
       name: userName as string,
     };
   }
-  
+
   next();
 });
 
