@@ -1,25 +1,34 @@
-import { initializeApp, cert } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
-import { getAuth } from 'firebase-admin/auth';
-
-const firebaseConfig = {
-  type: process.env.FIREBASE_TYPE || 'service_account',
-  project_id: process.env.FIREBASE_PROJECT_ID,
-  private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-  private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-  client_email: process.env.FIREBASE_CLIENT_EMAIL,
-  client_id: process.env.FIREBASE_CLIENT_ID,
-  auth_uri: process.env.FIREBASE_AUTH_URI,
-  token_uri: process.env.FIREBASE_TOKEN_URI,
-  auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_CERT_URL,
-  client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL,
+// Temporary mock Firebase configuration for development
+const mockDb = {
+  collection: () => ({
+    doc: () => ({
+      set: async () => ({ id: 'mock-id' }),
+      get: async () => ({ exists: false, data: () => ({}) }),
+      update: async () => ({}),
+      delete: async () => ({}),
+    }),
+    add: async () => ({ id: 'mock-id' }),
+    where: () => ({
+      get: async () => ({ docs: [] }),
+    }),
+    get: async () => ({ docs: [] }),
+  }),
 };
 
-const app = initializeApp({
-  credential: cert(firebaseConfig as any),
-  projectId: process.env.FIREBASE_PROJECT_ID,
-});
+const mockAuth = {
+  verifyIdToken: async () => ({ uid: 'mock-user-id' }),
+  createUser: async () => ({ uid: 'mock-user-id' }),
+  updateUser: async () => ({ uid: 'mock-user-id' }),
+  deleteUser: async () => ({}),
+};
 
-export const db = getFirestore(app);
-export const auth = getAuth(app);
-export default app;
+// Export mock objects for development
+export const db = mockDb as any;
+export const auth = mockAuth as any;
+
+const mockApp = {
+  name: 'mock-app',
+  options: {},
+};
+
+export default mockApp;
