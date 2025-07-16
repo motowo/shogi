@@ -10,7 +10,7 @@ describe('Frontend Setup', () => {
   test('package.json should contain React and TypeScript dependencies', () => {
     const packagePath = path.join(__dirname, 'package.json');
     const packageContent = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
-    
+
     expect(packageContent.dependencies.react).toBeDefined();
     expect(packageContent.dependencies['react-dom']).toBeDefined();
     expect(packageContent.devDependencies.typescript).toBeDefined();

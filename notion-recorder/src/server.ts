@@ -66,16 +66,16 @@ gameRecordingQueue.process('analyze_game', async (job) => {
 });
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', async (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
     service: 'notion-recorder',
     queue: {
-      waiting: gameRecordingQueue.waiting(),
-      active: gameRecordingQueue.active(),
-      completed: gameRecordingQueue.completed(),
-      failed: gameRecordingQueue.failed(),
+      waiting: await gameRecordingQueue.getWaiting(),
+      active: await gameRecordingQueue.getActive(),
+      completed: await gameRecordingQueue.getCompleted(),
+      failed: await gameRecordingQueue.getFailed(),
     },
   });
 });

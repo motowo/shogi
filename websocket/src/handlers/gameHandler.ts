@@ -164,7 +164,7 @@ export class GameHandler {
       // Update game state
       room.gameState.moves.push(move);
       room.gameState.currentPlayer = room.gameState.currentPlayer === 'sente' ? 'gote' : 'sente';
-      room.gameState.updatedAt = new Date();
+      room.gameState.updatedAt = new Date().toISOString();
       room.lastActivity = new Date();
 
       // Save to Redis
@@ -241,8 +241,9 @@ export class GameHandler {
         winner: room.players.find((id) => id !== socket.userId),
         reason: 'resignation',
         resignedBy: socket.userId,
+        timestamp: new Date().toISOString(),
       };
-      room.gameState.updatedAt = new Date();
+      room.gameState.updatedAt = new Date().toISOString();
 
       // Save to Redis
       await this.redis.saveGameState(gameId, room.gameState);
@@ -319,7 +320,7 @@ export class GameHandler {
 
       // If it's an active game, pause the timer
       if (room.gameState.status === 'active') {
-        room.gameState.pausedAt = new Date();
+        room.gameState.pausedAt = new Date().toISOString();
         await this.redis.saveGameState(gameId, room.gameState);
       }
 

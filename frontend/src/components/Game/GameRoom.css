@@ -1,0 +1,267 @@
+.game-room {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 20px;
+}
+
+.game-room.loading,
+.game-room.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.loading-spinner {
+  font-size: 18px;
+  color: #666;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.error-message {
+  font-size: 18px;
+  color: #dc3545;
+  margin-bottom: 20px;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 20px;
+}
+
+.game-header h2 {
+  margin: 0;
+  color: #333;
+}
+
+.game-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.turn-indicator {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 16px;
+  color: white;
+  animation: glow 2s infinite;
+}
+
+.turn-indicator.sente {
+  background-color: #dc3545;
+}
+
+.turn-indicator.gote {
+  background-color: #007bff;
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+  }
+}
+
+.game-layout {
+  display: flex;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.players-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.game-board-section {
+  order: 2;
+}
+
+.player-info {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.player-info.active {
+  border-color: #007bff;
+  background-color: #f8f9ff;
+}
+
+.player-info.sente {
+  order: 3;
+}
+
+.player-info.gote {
+  order: 1;
+}
+
+.player-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.player-rating {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.player-time {
+  font-size: 16px;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.game-sidebar {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.moves-history {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1;
+}
+
+.moves-history h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.moves-list {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.move-item {
+  padding: 5px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #555;
+}
+
+.move-item:last-child {
+  border-bottom: none;
+}
+
+.game-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.leave-button,
+.resign-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.leave-button {
+  background-color: #6c757d;
+  color: white;
+}
+
+.leave-button:hover {
+  background-color: #5a6268;
+}
+
+.resign-button {
+  background-color: #dc3545;
+  color: white;
+}
+
+.resign-button:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+.resign-button:disabled {
+  background-color: #d6d6d6;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .game-layout {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .game-sidebar {
+    width: 100%;
+    order: 3;
+  }
+
+  .players-section {
+    order: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .game-room {
+    padding: 10px;
+  }
+
+  .game-header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .game-layout {
+    gap: 15px;
+  }
+
+  .player-info {
+    padding: 10px;
+  }
+
+  .moves-history {
+    padding: 15px;
+  }
+
+  .moves-list {
+    max-height: 200px;
+  }
+}

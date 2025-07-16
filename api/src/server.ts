@@ -6,8 +6,9 @@ import dotenv from 'dotenv';
 
 import gameRoutes from './routes/gameRoutes';
 import authRoutes from './routes/authRoutes';
+import userRoutes from './routes/userRoutes';
+import shogiRoutes from './routes/shogiRoutes';
 import { errorHandler } from './middleware/errorHandler';
-import { authMiddleware } from './middleware/authMiddleware';
 
 dotenv.config();
 
@@ -31,7 +32,9 @@ app.get('/health', (req, res) => {
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/games', authMiddleware, gameRoutes);
+app.use('/api/games', gameRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/shogi', shogiRoutes);
 
 // Error handling
 app.use(errorHandler);

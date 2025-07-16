@@ -19,7 +19,7 @@ export class AuthService {
           // For development, use default credentials
           admin.initializeApp();
         }
-      } catch (error) {
+      } catch (error: any) {
         console.warn('Firebase initialization skipped:', error.message);
       }
     }

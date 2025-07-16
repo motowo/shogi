@@ -10,7 +10,7 @@ describe('API Server Setup', () => {
   test('package.json should contain Express and TypeScript dependencies', () => {
     const packagePath = path.join(__dirname, 'package.json');
     const packageContent = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
-    
+
     expect(packageContent.dependencies.express).toBeDefined();
     expect(packageContent.dependencies.cors).toBeDefined();
     expect(packageContent.devDependencies.typescript).toBeDefined();

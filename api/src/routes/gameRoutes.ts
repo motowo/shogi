@@ -1,14 +1,17 @@
 import { Router } from 'express';
 import { GameService } from '../services/gameService';
+import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();
 const gameService = new GameService();
+
+router.use(authMiddleware);
 
 // GET /api/games - Get user's games
 router.get('/', async (req, res) => {
   try {
     const userId = req.user?.uid;
-    const games = await gameService.getUserGames(userId);
+    const games = await gameService.getPlayerGames(userId);
     res.json(games);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch games' });
@@ -19,13 +22,9 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const userId = req.user?.uid;
-    const { gameType, timeControl } = req.body;
+    const { opponentId } = req.body;
 
-    const game = await gameService.createGame({
-      playerId: userId,
-      gameType,
-      timeControl,
-    });
+    const game = await gameService.createGame(userId, opponentId);
 
     res.status(201).json(game);
   } catch (error) {
@@ -56,8 +55,8 @@ router.post('/:gameId/moves', async (req, res) => {
     const { move } = req.body;
     const userId = req.user?.uid;
 
-    const result = await gameService.makeMove(gameId, userId, move);
-    res.json(result);
+    const success = await gameService.makeMove(gameId, userId, move);
+    res.json({ success });
   } catch (error) {
     res.status(500).json({ error: 'Failed to make move' });
   }

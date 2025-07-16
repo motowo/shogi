@@ -1,5 +1,5 @@
 import { Board } from '../logic/board';
-import { Move, GameState, Player, Piece } from '../types/shogi';
+import { Move, GameState, Player, Piece, Difficulty } from '../types/shogi';
 import { MoveValidator } from '../logic/moveValidator';
 import { GameStateChecker } from '../logic/gameStateChecker';
 import { AIPlayer } from '../logic/aiPlayer';
@@ -90,7 +90,7 @@ export class ShogiEngine {
   ): Promise<Move | null> {
     try {
       this.board.setState(boardState);
-      return await this.aiPlayer.getBestMove(this.board, currentPlayer, difficulty);
+      return await this.aiPlayer.getBestMove(this.board, currentPlayer, difficulty as Difficulty);
     } catch (error) {
       console.error('Error getting AI move:', error);
       return null;

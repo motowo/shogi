@@ -1,0 +1,386 @@
+.game-menu {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+  padding: 20px;
+}
+
+.menu-header {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu-header h1 {
+  color: #333;
+  font-size: 32px;
+  margin: 0;
+  font-weight: 700;
+}
+
+.user-info {
+  text-align: right;
+}
+
+.user-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.user-stats {
+  display: flex;
+  gap: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.user-stats span {
+  background: #f8f9fa;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.menu-content {
+  display: flex;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.game-options {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.option-card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.option-card h3 {
+  color: #333;
+  font-size: 20px;
+  margin: 0 0 20px 0;
+  font-weight: 600;
+}
+
+.game-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.game-button {
+  background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+  color: white;
+  border: none;
+  padding: 20px 30px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.game-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.game-button:hover::before {
+  left: 100%;
+}
+
+.game-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.game-button.ai-game {
+  background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+}
+
+.game-button.human-game {
+  background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+}
+
+.button-subtitle {
+  display: block;
+  font-size: 14px;
+  font-weight: 400;
+  margin-top: 5px;
+  opacity: 0.9;
+}
+
+.ai-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.difficulty-button {
+  padding: 12px 16px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.difficulty-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.difficulty-button.easy {
+  border-color: #00b894;
+  color: #00b894;
+}
+
+.difficulty-button.easy:hover {
+  background: #00b894;
+  color: white;
+}
+
+.difficulty-button.medium {
+  border-color: #fdcb6e;
+  color: #e17055;
+}
+
+.difficulty-button.medium:hover {
+  background: #fdcb6e;
+  color: white;
+}
+
+.difficulty-button.hard {
+  border-color: #fd79a8;
+  color: #e84393;
+}
+
+.difficulty-button.hard:hover {
+  background: #fd79a8;
+  color: white;
+}
+
+.difficulty-button.expert {
+  border-color: #6c5ce7;
+  color: #6c5ce7;
+}
+
+.difficulty-button.expert:hover {
+  background: #6c5ce7;
+  color: white;
+}
+
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.menu-button {
+  background: #74b9ff;
+  color: white;
+  border: none;
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.menu-button:hover {
+  background: #0984e3;
+  transform: translateY(-1px);
+}
+
+.menu-button.logout {
+  background: #d63031;
+}
+
+.menu-button.logout:hover {
+  background: #b71c1c;
+}
+
+.menu-sidebar {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.recent-games,
+.tips {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.recent-games h4,
+.tips h4 {
+  color: #333;
+  font-size: 16px;
+  margin: 0 0 15px 0;
+  font-weight: 600;
+}
+
+.game-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.game-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.game-item:last-child {
+  border-bottom: none;
+}
+
+.game-opponent {
+  font-weight: 500;
+  color: #333;
+}
+
+.game-result {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.game-result.win {
+  background: #d4edda;
+  color: #155724;
+}
+
+.game-result.loss {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.game-result.draw {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+.game-date {
+  font-size: 12px;
+  color: #666;
+}
+
+.tip-content {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 6px;
+  border-left: 4px solid #74b9ff;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .menu-content {
+    flex-direction: column;
+  }
+
+  .menu-sidebar {
+    width: 100%;
+    order: 2;
+  }
+
+  .game-options {
+    order: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .game-menu {
+    padding: 10px;
+  }
+
+  .menu-header {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .menu-header h1 {
+    font-size: 24px;
+  }
+
+  .user-stats {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .option-card {
+    padding: 20px;
+  }
+
+  .game-button {
+    padding: 15px 20px;
+    font-size: 16px;
+  }
+
+  .ai-options {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .ai-options {
+    grid-template-columns: 1fr;
+  }
+
+  .difficulty-button {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+}
