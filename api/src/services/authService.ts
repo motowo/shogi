@@ -1,4 +1,5 @@
-import admin from 'firebase-admin';
+import { auth } from '../config/firebase';
+import { FirestoreService, User } from './firestoreService';
 
 export interface UserProfile {
   uid: string;
@@ -14,63 +15,59 @@ export interface UserProfile {
 }
 
 export class AuthService {
+  private firestoreService: FirestoreService;
+
   constructor() {
-    this.initializeFirebase();
+    this.firestoreService = new FirestoreService();
   }
 
-  private initializeFirebase() {
-    if (!admin.apps.length) {
-      try {
-        const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
-
-        if (serviceAccount) {
-          const serviceAccountObj = JSON.parse(serviceAccount);
-          admin.initializeApp({
-            credential: admin.credential.cert(serviceAccountObj),
-          });
-        } else {
-          // For development, use default credentials
-          admin.initializeApp();
-        }
-      } catch (error) {
-        console.warn('Firebase initialization skipped:', error.message);
-      }
-    }
-  }
-
-  async verifyIdToken(idToken: string): Promise<admin.auth.DecodedIdToken> {
+  async verifyIdToken(idToken: string): Promise<any> {
     try {
-      return await admin.auth().verifyIdToken(idToken);
+      return await auth.verifyIdToken(idToken);
     } catch (error) {
       throw new Error('Invalid ID token');
     }
   }
 
-  async refreshUserSession(refreshToken: string): Promise<{ accessToken: string }> {
-    // Note: Firebase Admin SDK doesn't support refresh tokens directly
-    // This would typically be handled by the client SDK
-    throw new Error('Refresh token handling not implemented');
+  async createUser(userData: { email: string; password: string; displayName: string }) {
+    try {
+      const userRecord = await auth.createUser({
+        email: userData.email,
+        password: userData.password,
+        displayName: userData.displayName,
+      });
+
+      // Create user profile in Firestore
+      await this.firestoreService.createUser({
+        uid: userRecord.uid,
+        email: userData.email,
+        displayName: userData.displayName,
+      });
+
+      return userRecord;
+    } catch (error) {
+      console.error('User creation failed:', error);
+      throw error;
+    }
   }
 
   async getUserProfile(uid: string): Promise<UserProfile | null> {
     try {
-      const userRecord = await admin.auth().getUser(uid);
+      const user = await this.firestoreService.getUser(uid);
+      if (!user) return null;
 
-      // In a real implementation, this would fetch from Firestore
-      const profile: UserProfile = {
-        uid: userRecord.uid,
-        email: userRecord.email,
-        displayName: userRecord.displayName || 'Anonymous',
-        rating: 1200, // Default rating
-        gamesPlayed: 0,
-        wins: 0,
-        losses: 0,
-        draws: 0,
-        createdAt: new Date(userRecord.metadata.creationTime),
-        lastSeen: new Date(),
+      return {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        rating: user.rating || 1500,
+        gamesPlayed: user.gamesPlayed || 0,
+        wins: user.wins || 0,
+        losses: user.losses || 0,
+        draws: user.draws || 0,
+        createdAt: user.createdAt,
+        lastSeen: user.updatedAt,
       };
-
-      return profile;
     } catch (error) {
       console.error('Error fetching user profile:', error);
       return null;
@@ -78,8 +75,31 @@ export class AuthService {
   }
 
   async updateUserProfile(uid: string, updates: Partial<UserProfile>): Promise<UserProfile | null> {
-    // In a real implementation, this would update Firestore
-    console.log('Update user profile:', uid, updates);
-    return this.getUserProfile(uid);
+    try {
+      const userUpdates: Partial<User> = {
+        email: updates.email,
+        displayName: updates.displayName,
+        rating: updates.rating,
+        gamesPlayed: updates.gamesPlayed,
+        wins: updates.wins,
+        losses: updates.losses,
+        draws: updates.draws,
+      };
+
+      await this.firestoreService.updateUser(uid, userUpdates);
+      return this.getUserProfile(uid);
+    } catch (error) {
+      console.error('Error updating user profile:', error);
+      throw error;
+    }
+  }
+
+  async deleteUser(uid: string) {
+    try {
+      await auth.deleteUser(uid);
+    } catch (error) {
+      console.error('User deletion failed:', error);
+      throw error;
+    }
   }
 }

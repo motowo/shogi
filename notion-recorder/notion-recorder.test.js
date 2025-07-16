@@ -10,7 +10,7 @@ describe('Notion Recorder Service Setup', () => {
   test('package.json should contain Notion SDK and TypeScript dependencies', () => {
     const packagePath = path.join(__dirname, 'package.json');
     const packageContent = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
-    
+
     expect(packageContent.dependencies['@notionhq/client']).toBeDefined();
     expect(packageContent.dependencies.redis).toBeDefined();
     expect(packageContent.dependencies.bull).toBeDefined();

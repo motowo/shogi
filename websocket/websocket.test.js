@@ -10,7 +10,7 @@ describe('WebSocket Server Setup', () => {
   test('package.json should contain Socket.io and TypeScript dependencies', () => {
     const packagePath = path.join(__dirname, 'package.json');
     const packageContent = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
-    
+
     expect(packageContent.dependencies['socket.io']).toBeDefined();
     expect(packageContent.dependencies.redis).toBeDefined();
     expect(packageContent.devDependencies.typescript).toBeDefined();
